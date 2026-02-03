@@ -79,6 +79,7 @@ export default function GameScreen() {
     setPicksLeft(3);
     setIsGameOver(false);
     setSlappedPlayer(null);
+    turnLockedRef.current = false;
   }, [mineCount]);
 
   useEffect(() => {
