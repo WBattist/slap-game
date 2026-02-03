@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
   Modal,
   useColorScheme,
 } from "react-native";
@@ -23,12 +23,8 @@ import { Colors } from "@/constants/colors";
 const GRID_SIZE = 5;
 const TOTAL_TILES = GRID_SIZE * GRID_SIZE;
 const GAP = 12;
-const SCREEN_WIDTH = Dimensions.get("window").width;
 const GRID_PADDING = 24;
-const AVAILABLE_WIDTH = SCREEN_WIDTH - GRID_PADDING * 2;
-const TILE_SIZE = Math.floor(
-  (AVAILABLE_WIDTH - GAP * (GRID_SIZE - 1)) / GRID_SIZE
-);
+const MAX_GRID_WIDTH = 420;
 
 type Tile = {
   id: number;
@@ -41,6 +37,11 @@ export default function GameScreen() {
   const params = useLocalSearchParams();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
+  const { width: windowWidth } = useWindowDimensions();
+  const availableWidth = Math.min(windowWidth - GRID_PADDING * 2, MAX_GRID_WIDTH);
+  const tileSize = Math.floor(
+    (availableWidth - GAP * (GRID_SIZE - 1)) / GRID_SIZE
+  );
 
   const players = (() => {
     try {
@@ -219,7 +220,7 @@ export default function GameScreen() {
       </View>
 
       <View style={styles.gridContainer}>
-        <View style={styles.grid}>
+        <View style={[styles.grid, { width: availableWidth }]}>
           {grid.map((tile, index) => (
             <TileComponent
               key={tile.id}
@@ -227,6 +228,7 @@ export default function GameScreen() {
               onPress={() => handleTilePress(index)}
               disabled={isGameOver || tile.isRevealed || picksLeft === 0}
               theme={theme}
+              tileSize={tileSize}
             />
           ))}
         </View>
@@ -296,11 +298,13 @@ function TileComponent({
   onPress,
   disabled,
   theme,
+  tileSize,
 }: {
   tile: Tile;
   onPress: () => void;
   disabled: boolean;
   theme: typeof Colors.light;
+  tileSize: number;
 }) {
   const rotate = useSharedValue(0);
 
@@ -332,7 +336,7 @@ function TileComponent({
       activeOpacity={0.8}
       onPress={onPress}
       disabled={disabled}
-      style={[styles.tileWrapper, { width: TILE_SIZE, height: TILE_SIZE }]}
+      style={[styles.tileWrapper, { width: tileSize, height: tileSize }]}
     >
       <Animated.View
         style={[
@@ -449,7 +453,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: GAP,
-    width: AVAILABLE_WIDTH,
     justifyContent: "center",
   },
   tileWrapper: {},
