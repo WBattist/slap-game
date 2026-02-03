@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Slap Grid",
+    "slug": "slap-grid",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
